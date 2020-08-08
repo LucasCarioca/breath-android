@@ -1,83 +1,87 @@
 package net.lucasdesouza.countmybreaths.ui.counter
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import kotlinx.android.synthetic.main.fragment_counter.*
+import net.lucasdesouza.countmybreaths.MainActivity
 import net.lucasdesouza.countmybreaths.R
 import java.util.*
 import kotlin.concurrent.schedule
 
-class CounterFragment : Fragment() {
 
-    private lateinit var counterViewModel: CounterViewModel
+class CounterFragment : Fragment(R.layout.fragment_counter) {
 
     private var count = 0
     private var timer = 30
     private var isCounting = false
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        counterViewModel =
-                ViewModelProviders.of(this).get(CounterViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_counter, container, false)
-        initCounter(root)
-        return root
-    }
 
-    private fun initCounter(root: View?) {
-        var breathButton: AppCompatImageButton = root!!.findViewById(R.id.breathButton)
-        setCountLabel(root, count)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        updateCountText()
         isCounting = false
-        setBreathButtonListener(root, breathButton)
+        startBreathButtonListener()
     }
 
-    private fun setBreathButtonListener(root: View?, button: AppCompatImageButton) {
-        button.setOnClickListener {
+    private fun startBreathButtonListener() {
+        breathButton.setOnClickListener {
+            val activity: MainActivity? = activity as MainActivity?
+            activity?.vibrateShort()
             if (!isCounting) {
+                result_text.text = ""
                 isCounting = true
-                setTimer(root)
+                startTimer()
             }
             count += 1
-            setCountLabel(root, count)
+            updateCountText()
+        }
+    }
+    private fun updateCountText () {
+        if (count == 0) {
+            current_time_remaining.text = ""
+        } else {
+            val countText = "$count Breaths"
+            current_breaths_count.text = countText
         }
     }
 
-    private fun setCountLabel(root: View?, count: Int) {
-        var textView: TextView = root!!.findViewById(R.id.current_breaths_count)
-        textView.text = "${count} Breaths"
+    private fun updateTimerText () {
+        if (timer == 30) {
+            current_time_remaining.text = ""
+        } else {
+            val timerText = "$timer Seconds left"
+            current_time_remaining.text = timerText
+        }
     }
 
-    private fun setTimerLabel(root: View?, timer: Int) {
-        var textView: TextView = root!!.findViewById(R.id.current_time_remaining)
-        textView.text = "${timer} Seconds remaining"
-    }
-
-    private fun setTimer(root: View?) {
+    private fun startTimer() {
         Timer("CountDown", false).schedule(1000) {
-            timer -= 1
-            setTimerLabel(root, timer)
-            if (!(timer <= 0)) {
-                setTimer(root)
-            } else {
-                var textView: TextView = root!!.findViewById(R.id.current_time_remaining)
-                var breathButton: AppCompatImageButton = root!!.findViewById(R.id.breathButton)
-                val bpm = count * 2
-                textView.text = "$bpm Breaths per minute"
-                isCounting = false
-                count = 0
-                timer = 30
-                setBreathButtonListener(root, breathButton)
+            if (current_time_remaining != null) {
+                timer -= 1
+                updateTimerText()
+                if (!(timer <= 0)) {
+                    startTimer()
+                } else {
+                    val bpm = count * 2
+                    if (bpm >= 30) {
+                        val activity: MainActivity? = activity as MainActivity?
+                        activity?.vibrateLong()
+                        activity?.toastLong("$bpm Breaths per minute is HIGH. Please contact your veterinarian")
+                    } else {
+                        val activity: MainActivity? = activity as MainActivity?
+                        activity?.vibrateMed()
+                        activity?.toastShort("$bpm Breaths per minute")
+                    }
+                    val result = "$bpm Breaths per minute"
+                    result_text.text = result
+                    isCounting = false
+                    count = 0
+                    timer = 30
+                    updateCountText()
+                    updateTimerText()
+                    startBreathButtonListener()
+                }
             }
         }
     }

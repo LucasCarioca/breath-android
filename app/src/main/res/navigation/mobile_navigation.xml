@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_counter">
+
+    <fragment
+        android:id="@+id/navigation_counter"
+        android:name="net.lucasdesouza.countmybreaths.ui.counter.CounterFragment"
+        android:label="Counter"
+        tools:layout="@layout/fragment_counter" />
+
+    <fragment
+        android:id="@+id/navigation_history"
+        android:name="net.lucasdesouza.countmybreaths.ui.history.HistoryFragment"
+        android:label="History"
+        tools:layout="@layout/fragment_history" />
+
+    <fragment
+        android:id="@+id/navigation_info"
+        android:name="net.lucasdesouza.countmybreaths.ui.info.InfoFragment"
+        android:label="Info"
+        tools:layout="@layout/fragment_info" />
+</navigation>

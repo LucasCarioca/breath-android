@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_counter.*
 import net.lucasdesouza.countmybreaths.MainActivity
 import net.lucasdesouza.countmybreaths.R
+import net.lucasdesouza.countmybreaths.data.BreathRecordContract
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -13,15 +14,17 @@ import kotlin.concurrent.schedule
 class CounterFragment : Fragment(R.layout.fragment_counter) {
 
     private var count = 0
-    private var timer = 30
+    private var timer = 0
     private var isCounting = false
-
+    private lateinit var dbHelper: BreathRecordContract.BreathRecordDbHelper
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dbHelper = BreathRecordContract.getHelper(this.requireContext())
         updateCountText()
         isCounting = false
         startBreathButtonListener()
+        startResetButtonListener()
     }
 
     private fun startBreathButtonListener() {
@@ -30,6 +33,8 @@ class CounterFragment : Fragment(R.layout.fragment_counter) {
             activity?.vibrateShort()
             if (!isCounting) {
                 result_text.text = ""
+                result_text.visibility = View.GONE
+                resetButton.visibility = View.VISIBLE
                 isCounting = true
                 startTimer()
             }
@@ -37,30 +42,36 @@ class CounterFragment : Fragment(R.layout.fragment_counter) {
             updateCountText()
         }
     }
-    private fun updateCountText () {
-        if (count == 0) {
-            current_time_remaining.text = ""
-        } else {
-            val countText = "$count Breaths"
-            current_breaths_count.text = countText
+
+    private fun startResetButtonListener() {
+        resetButton.setOnClickListener {
+            val activity: MainActivity? = activity as MainActivity?
+            activity?.vibrateShort()
+            isCounting = false
+            count = 0
+            timer = 0
+            updateCountText()
+            updateTimerText()
+            result_text.text = ""
+            result_text.visibility = View.GONE
+            resetButton.visibility = View.GONE
         }
+    }
+    private fun updateCountText () {
+        val countText = "$count Breaths"
+        current_breaths_count.text = countText
     }
 
     private fun updateTimerText () {
-        if (timer == 30) {
-            current_time_remaining.text = ""
-        } else {
-            val timerText = "$timer Seconds left"
-            current_time_remaining.text = timerText
-        }
+        timeRemainingProgressBar.progress = timer
     }
 
     private fun startTimer() {
         Timer("CountDown", false).schedule(1000) {
-            if (current_time_remaining != null) {
-                timer -= 1
+            if (isCounting) {
+                timer += 1
                 updateTimerText()
-                if (!(timer <= 0)) {
+                if (timer < 30) {
                     startTimer()
                 } else {
                     val bpm = count * 2
@@ -74,15 +85,24 @@ class CounterFragment : Fragment(R.layout.fragment_counter) {
                         activity?.toastShort("$bpm Breaths per minute")
                     }
                     val result = "$bpm Breaths per minute"
+                    BreathRecordContract.addRecord(dbHelper, System.currentTimeMillis() / 1000, bpm)
                     result_text.text = result
+                    result_text.visibility = View.VISIBLE
+                    resetButton.visibility = View.GONE
                     isCounting = false
                     count = 0
-                    timer = 30
+                    timer = 0
                     updateCountText()
                     updateTimerText()
                     startBreathButtonListener()
+                    startResetButtonListener()
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        BreathRecordContract.helperClose(dbHelper)
+        super.onDestroy()
     }
 }

@@ -1,28 +1,27 @@
 package net.lucasdesouza.countmybreaths.ui.info
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import kotlinx.android.synthetic.main.fragment_info.*
 import net.lucasdesouza.countmybreaths.R
+import net.lucasdesouza.countmybreaths.data.BreathRecordContract
 
-class InfoFragment : Fragment() {
+class InfoFragment : Fragment(R.layout.fragment_info) {
 
-    private lateinit var infoViewModel: InfoViewModel
+    private lateinit var dbHelper: BreathRecordContract.BreathRecordDbHelper
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        infoViewModel =
-                ViewModelProviders.of(this).get(InfoViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_info, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dbHelper = BreathRecordContract.getHelper(this.requireContext())
+        deleteAllDataButton.setOnClickListener {
+            BreathRecordContract.deleteAll(dbHelper)
+            BreathRecordContract.fetchAll(dbHelper)
+        }
+    }
 
-        return root
+    override fun onDestroy() {
+        BreathRecordContract.helperClose(dbHelper)
+        super.onDestroy()
     }
 }

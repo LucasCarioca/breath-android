@@ -1,28 +1,28 @@
 package net.lucasdesouza.countmybreaths.ui.history
 
+import android.database.Cursor
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import kotlinx.android.synthetic.main.fragment_history.*
 import net.lucasdesouza.countmybreaths.R
+import net.lucasdesouza.countmybreaths.data.BreathRecordContract
 
-class HistoryFragment : Fragment() {
+class HistoryFragment : Fragment(R.layout.fragment_history) {
 
-    private lateinit var historyViewModel: HistoryViewModel
+    private lateinit var dbHelper: BreathRecordContract.BreathRecordDbHelper
+    private var cursor: Cursor? = null
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        historyViewModel =
-                ViewModelProviders.of(this).get(HistoryViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_history, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dbHelper = BreathRecordContract.getHelper(this.requireContext())
+        cursor = BreathRecordContract.fetchAll(dbHelper)
+        var breathsRecordAdapter = BreathsRecordCursorAdapter(this.requireContext(), cursor)
+        breathRecordListView.adapter = breathsRecordAdapter
+    }
 
-        return root
+    override fun onDestroy() {
+        BreathRecordContract.helperClose(dbHelper)
+        super.onDestroy()
     }
 }

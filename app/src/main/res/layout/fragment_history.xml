@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.history.HistoryFragment">
 
     <TextView
@@ -14,5 +15,10 @@
         android:textStyle="bold"
         android:textColor="@color/text"
         android:layout_marginLeft="15dp"/>
+
+    <ListView
+        android:id="@+id/breathRecordListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

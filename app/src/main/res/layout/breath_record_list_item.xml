@@ -30,6 +30,7 @@
         android:minHeight="50dp"
         android:indeterminate="false"
         android:layout_marginLeft="15dp"
+        android:progressTint="@color/primary"
         android:layout_marginRight="15dp"
         />
 </LinearLayout>

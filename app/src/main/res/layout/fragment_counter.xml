@@ -36,6 +36,7 @@
         android:progress="0"
         android:minHeight="50dp"
         android:indeterminate="false"
+        android:progressTint="@color/primary"
         android:layout_margin="15dp"/>
 
     <TextView

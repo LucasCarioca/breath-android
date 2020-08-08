@@ -74,28 +74,27 @@ class CounterFragment : Fragment(R.layout.fragment_counter) {
                 if (timer < 30) {
                     startTimer()
                 } else {
+                    val activity: MainActivity? = activity as MainActivity?
                     val bpm = count * 2
                     if (bpm >= 30) {
-                        val activity: MainActivity? = activity as MainActivity?
                         activity?.vibrateLong()
                         activity?.toastLong("$bpm Breaths per minute is HIGH. Please contact your veterinarian")
                     } else {
-                        val activity: MainActivity? = activity as MainActivity?
                         activity?.vibrateMed()
                         activity?.toastShort("$bpm Breaths per minute")
                     }
                     val result = "$bpm Breaths per minute"
                     BreathRecordContract.addRecord(dbHelper, System.currentTimeMillis() / 1000, bpm)
                     result_text.text = result
-                    result_text.visibility = View.VISIBLE
-                    resetButton.visibility = View.GONE
+                    activity?.runOnUiThread {
+                        result_text.visibility = View.VISIBLE
+                        resetButton.visibility = View.GONE
+                    }
                     isCounting = false
                     count = 0
                     timer = 0
                     updateCountText()
                     updateTimerText()
-                    startBreathButtonListener()
-                    startResetButtonListener()
                 }
             }
         }

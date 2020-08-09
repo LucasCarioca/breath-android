@@ -54,6 +54,14 @@ object BreathRecordContract {
         db.delete(BreathsRecord.TABLE_NAME, selection, selectionArgs)
     }
 
+    fun deleteById(dbHelper: BreathRecordDbHelper, id: Long) {
+        val db = dbHelper.writableDatabase
+        val selection = "${BaseColumns._ID} = ?"
+        val selectionArgs = arrayOf("$id")
+        db.delete(BreathsRecord.TABLE_NAME, selection, selectionArgs)
+    }
+
+
     fun addRecord(dbHelper: BreathRecordDbHelper, timestamp: Long, breaths: Int) {
 
         val db = dbHelper.writableDatabase

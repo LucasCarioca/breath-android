@@ -5,23 +5,81 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/background"
     tools:context=".ui.info.InfoFragment">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
         android:text="Info"
-        android:textSize="40sp"
-        android:textStyle="bold"
         android:textColor="@color/text"
-        android:layout_marginLeft="15dp"/>
+        android:textSize="40sp"
+        android:layout_marginBottom="15dp"
+        android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/deleteAllDataButton"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/info_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.Design.NoActionBar">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/help_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Help"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/pet_health_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pet health"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/about_us_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="About us"/>
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <LinearLayout
+        android:id="@+id/help_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/text"
+            android:text="Help"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pet_health_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="DELETE ALL DATA"
-        android:textColor="@color/text" />
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/text"
+            android:text="Pet health"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/about_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/text"
+            android:text="About"/>
+    </LinearLayout>
 
 </LinearLayout>
